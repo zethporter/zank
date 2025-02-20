@@ -1,11 +1,37 @@
 import { create } from "zustand";
+import { toast } from "sonner";
 import { type Game, type User } from "./gameSchema";
 
 const findNextPlayer = (players: User[], currentPlayer: number) => {
-  const playersTotal = players.length;
-  const nextIndex = currentPlayer + 1 > playersTotal ? currentPlayer + 1 : 0;
-  if (!players[nextIndex]) return nextIndex;
-  return findNextPlayer(players, nextIndex);
+  let _currentPlayer = currentPlayer + 1;
+  let returner = null;
+  while (typeof returner !== "number") {
+    console.error("player", {
+      _currentPlayer,
+      players,
+      length: players.length,
+    });
+    if (_currentPlayer > players.length - 1) {
+      _currentPlayer = 0;
+    }
+    if (players[_currentPlayer].banked) {
+      _currentPlayer++;
+    } else {
+      returner = _currentPlayer;
+    }
+  }
+  return returner;
+};
+
+const checkIfAllBanked = (players: User[]) => {
+  return players.every((player) => player.banked);
+};
+
+const resetBankedPlayers = (players: User[]) => {
+  return players.map((player) => {
+    player.banked = false;
+    return player;
+  });
 };
 
 const scoreCalculator = (
@@ -86,10 +112,7 @@ export const useGameStore = create<Game>()((set) => ({
         if (state.currentRound === state.totalRounds) {
           return { gameStatus: "finished" };
         }
-        const players = state.players.map((player) => ({
-          ...player,
-          banked: false,
-        }));
+        const players = resetBankedPlayers(state.players);
         const currentPlayer = findNextPlayer(players, state.currentPlayer);
         return {
           players,
@@ -108,18 +131,30 @@ export const useGameStore = create<Game>()((set) => ({
     }),
   bank: (playerId) =>
     set((state) => {
+      toast.success(`Banked ${playerId}`);
       let currentPlayerIsUp = false;
       const players = state.players.map((player, i) => {
-        if (i === state.currentPlayer) {
-          currentPlayerIsUp = true;
+        if (player.id === playerId) {
+          if (i === state.currentPlayer) {
+            currentPlayerIsUp = true;
+          }
+          return { ...player, banked: true };
         }
-        return player.id === playerId ? { ...player, banked: true } : player;
+        return player;
       });
+      if (checkIfAllBanked(players)) {
+        return {
+          players: resetBankedPlayers(players),
+          currentRound: state.currentRound + 1,
+          roundRollCount: 0,
+        };
+      }
+      const currentPlayer = currentPlayerIsUp
+        ? findNextPlayer(players, state.currentPlayer)
+        : state.currentPlayer;
       return {
         players,
-        currentPlayer: currentPlayerIsUp
-          ? findNextPlayer(players, state.currentPlayer)
-          : state.currentPlayer,
+        currentPlayer,
       };
     }),
   newGame: (keepPlayers) =>

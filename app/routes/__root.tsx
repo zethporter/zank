@@ -12,6 +12,7 @@ import {
   ClerkProvider,
 } from "@clerk/tanstack-start";
 import "../styles/index.css";
+import { Toaster } from "sonner";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -57,6 +58,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
               </div>
             </div>
             <main className="p-4">{children}</main>
+            <Toaster />
           </SignedIn>
           <SignedOut>
             <main className="flex flex-col items-center justify-center gap-4 p-4">
