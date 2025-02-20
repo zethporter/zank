@@ -6,11 +6,6 @@ const findNextPlayer = (players: User[], currentPlayer: number) => {
   let _currentPlayer = currentPlayer + 1;
   let returner = null;
   while (typeof returner !== "number") {
-    console.error("player", {
-      _currentPlayer,
-      players,
-      length: players.length,
-    });
     if (_currentPlayer > players.length - 1) {
       _currentPlayer = 0;
     }
