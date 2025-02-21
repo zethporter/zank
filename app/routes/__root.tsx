@@ -47,26 +47,28 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <head>
           <Meta />
         </head>
-        <body>
-          <SignedIn>
-            <div className="navbar bg-base-100 shadow-sm">
-              <div className="flex-1">
-                <a className="btn btn-ghost text-xl">Bank By Zeth</a>
+        <body className="bg-base-100">
+          <div className=" bg-radial-[at_50%_75%] from-primary/20 via-secondary/20 to-accent/20 to-90% h-[100dvh]">
+            <SignedIn>
+              <div className="navbar ">
+                <div className="flex-1">
+                  <a className="btn btn-ghost text-xl">Bank By Zeth</a>
+                </div>
+                <div className="flex-none">
+                  <UserButton />
+                </div>
               </div>
-              <div className="flex-none">
-                <UserButton />
-              </div>
-            </div>
-            <main className="p-4">{children}</main>
-            <Toaster />
-          </SignedIn>
-          <SignedOut>
-            <main className="flex flex-col items-center justify-center gap-4 p-4">
-              <SignInButton />
-              <SignUpButton />
-            </main>
-          </SignedOut>
-          <Scripts />
+              <main className="p-4">{children}</main>
+              <Toaster />
+            </SignedIn>
+            <SignedOut>
+              <main className="flex flex-col items-center justify-center gap-4 p-4">
+                <SignInButton />
+                <SignUpButton />
+              </main>
+            </SignedOut>
+            <Scripts />
+          </div>
         </body>
       </html>
     </ClerkProvider>

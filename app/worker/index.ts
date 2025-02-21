@@ -114,6 +114,7 @@ export const useGameStore = create<Game>()((set) => ({
           currentPlayer,
           currentRound: state.currentRound + 1,
           roundRollCount: 0,
+          currentScore: 0,
         };
       }
       const currentScore = scoreCalculator(
@@ -133,7 +134,11 @@ export const useGameStore = create<Game>()((set) => ({
           if (i === state.currentPlayer) {
             currentPlayerIsUp = true;
           }
-          return { ...player, banked: true };
+          return {
+            ...player,
+            banked: true,
+            score: player.score + state.currentScore,
+          };
         }
         return player;
       });
@@ -142,6 +147,7 @@ export const useGameStore = create<Game>()((set) => ({
           players: resetBankedPlayers(players),
           currentRound: state.currentRound + 1,
           roundRollCount: 0,
+          currentScore: 0,
         };
       }
       const currentPlayer = currentPlayerIsUp

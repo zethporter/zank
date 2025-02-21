@@ -5,9 +5,11 @@ import type { User, Game } from "../worker/gameSchema";
 const Scoreboard = ({
   players,
   bank,
+  currentScore,
 }: {
   players: User[];
   bank: (playerId: string) => void;
+  currentScore: number;
 }) => {
   const [tempPlayer, setTempPlayer] = useState<string | null>(null);
   return (
@@ -27,7 +29,6 @@ const Scoreboard = ({
             </button>
           </div>
         ))}
-        <pre className="text-primary">{JSON.stringify(players, null, 2)}</pre>
       </div>
     </div>
   );
