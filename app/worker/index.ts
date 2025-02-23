@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { toast } from "sonner";
-import { type Game, type User } from "./gameSchema";
+import type { Game, User, Roll } from "./gameSchema";
 
 const findNextPlayer = (players: User[], currentPlayer: number) => {
   let _currentPlayer = currentPlayer + 1;
@@ -29,22 +29,22 @@ const resetBankedPlayers = (players: User[]) => {
   });
 };
 
-const scoreCalculator = (
+const getRollAmount = (
   rv1: number,
   rv2: number,
-  currentRollIndex: number,
+  roundRollCount: number,
   currentScore: number,
 ) => {
-  if (currentRollIndex >= 3) {
+  if (roundRollCount < 3) {
     if (rv1 + rv2 === 7) {
-      return currentScore + 70;
+      return 70;
     }
-    return currentScore + rv1 + rv2;
+    return rv1 + rv2;
   }
   if (rv1 === rv2) {
-    return currentScore * 2;
+    return currentScore;
   }
-  return currentScore + rv1 + rv2;
+  return rv1 + rv2;
 };
 
 export const useGameStore = create<Game>()((set) => ({
@@ -52,6 +52,7 @@ export const useGameStore = create<Game>()((set) => ({
   gameCode: "defaultGameCode",
   totalRounds: 10,
   currentRound: 0,
+  currentRoundRollHist: [],
   roundRollCount: 0,
   currentScore: 0,
   currentPlayer: 0,
@@ -80,9 +81,9 @@ export const useGameStore = create<Game>()((set) => ({
     })),
   movePlayer: (playerIndex, dir) =>
     set((state) => {
+      const players = state.players;
       if (dir === "up" && playerIndex === 0) return state;
       if (dir === "down" && playerIndex === players.length - 1) return state;
-      const players = state.players;
       if (dir === "up") {
         const currentPlayer = players[playerIndex];
         players[playerIndex] = players[playerIndex - 1];
@@ -100,10 +101,15 @@ export const useGameStore = create<Game>()((set) => ({
   changeNumberOfRounds: (totalRounds) =>
     set((state) => (state.gameStatus === "lobby" ? { totalRounds } : state)),
   startGame: () => set((state) => ({ gameStatus: "playing", currentRound: 1 })),
-  completeRoll: ([rv1, rv2]) =>
+  completeRoll: () =>
     set((state) => {
+      const latestRoll = state.currentRoundRollHist.pop();
+      //catch bad roll completion attempt.
+      if (!latestRoll || latestRoll.completed) {
+        return state;
+      }
       const currentRollIndex = state.roundRollCount + 1;
-      if (currentRollIndex > 3 && rv1 + rv2 === 7) {
+      if (latestRoll.rollAmt === 7) {
         if (state.currentRound === state.totalRounds) {
           return { gameStatus: "finished" };
         }
@@ -114,20 +120,24 @@ export const useGameStore = create<Game>()((set) => ({
           currentPlayer,
           currentRound: state.currentRound + 1,
           roundRollCount: 0,
+          currentRoundRollHist: [],
           currentScore: 0,
         };
       }
-      const currentScore = scoreCalculator(
-        rv1,
-        rv2,
+      latestRoll.completed = true;
+      state.currentRoundRollHist.push(latestRoll);
+      const currentRoundRollHist = state.currentRoundRollHist;
+      const currentScore = state.currentScore + latestRoll.rollAmt;
+      const roundRollCount = state.roundRollCount + 1;
+      return {
         currentRollIndex,
-        state.currentScore,
-      );
-      return { currentRollIndex, currentScore };
+        currentScore,
+        currentRoundRollHist,
+        roundRollCount,
+      };
     }),
   bank: (playerId) =>
     set((state) => {
-      toast.success(`Banked ${playerId}`);
       let currentPlayerIsUp = false;
       const players = state.players.map((player, i) => {
         if (player.id === playerId) {
@@ -173,5 +183,25 @@ export const useGameStore = create<Game>()((set) => ({
       currentPlayer: 0,
       gameStatus: "lobby",
     })),
-  rollDice: () => [Math.ceil(Math.random() * 6), Math.ceil(Math.random() * 6)],
+  rollDice: () => {
+    const rv1 = Math.ceil(Math.random() * 6);
+    const rv2 = Math.ceil(Math.random() * 6);
+    set((state) => {
+      const rollAmt = getRollAmount(
+        rv1,
+        rv2,
+        state.roundRollCount,
+        state.currentScore,
+      );
+      state.currentRoundRollHist.push({
+        roll: [rv1, rv2],
+        rollAmt,
+        completed: false,
+      });
+      return {
+        currentRoundRollHist: state.currentRoundRollHist,
+      };
+    });
+    return [rv1, rv2];
+  },
 }));

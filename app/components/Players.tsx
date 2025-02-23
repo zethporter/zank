@@ -6,22 +6,24 @@ import {
 } from "@heroicons/react/16/solid";
 
 import type { User, Game } from "../worker/gameSchema";
+import { toast } from "sonner";
 const Players = ({
   players,
   addPlayer,
   removePlayer,
   movePlayer,
+  changeNumberOfRounds,
 }: {
   players: User[];
   addPlayer: (player: string) => void;
   removePlayer: (player: string) => void;
   movePlayer: (playerKey: number, direction: "up" | "down") => void;
+  changeNumberOfRounds: (rounds: number) => void;
 }) => {
   const [tempPlayer, setTempPlayer] = useState<string | null>(null);
   return (
     <div className="flex flex-col gap-3 w-full sm:w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4 items-center">
       <form
-        className="join w-full"
         onSubmit={(e) => {
           e.preventDefault();
           if (tempPlayer !== null) {
@@ -30,16 +32,39 @@ const Players = ({
           }
         }}
       >
-        <input
-          type="text"
-          className="input input-neutral join-item grow"
-          placeholder={`Player's Name`}
-          value={tempPlayer || ""}
-          onChange={(e) => setTempPlayer(e.target.value)}
-        />
-        <button type="submit" className="btn btn-secondary btn-soft join-item">
-          Add Player
-        </button>
+        <fieldset className="w-full fieldset bg-base-200/30 border border-base-300/10 shadow-lg p-4 rounded-box">
+          <legend className="fieldset-legend">Game Settings</legend>
+          <label className="fieldset-label">Rounds</label>
+          <select
+            onChange={(event) =>
+              changeNumberOfRounds(parseInt(event.target.value))
+            }
+            defaultValue="rounds"
+            className="select select-neutral"
+          >
+            <option disabled={true}>Select Rounds</option>
+            <option>10</option>
+            <option>15</option>
+            <option>20</option>
+            <option>25</option>
+          </select>
+          <label className="fieldset-label">Players</label>
+          <div className="join">
+            <input
+              type="text"
+              className="input input-neutral join-item grow"
+              placeholder={`Player's Name`}
+              value={tempPlayer || ""}
+              onChange={(e) => setTempPlayer(e.target.value)}
+            />
+            <button
+              type="submit"
+              className="btn btn-secondary btn-soft join-item"
+            >
+              Add Player
+            </button>
+          </div>
+        </fieldset>
       </form>
       <ul className="flex flex-col gap-1 w-full">
         {players.map((player, index) => (

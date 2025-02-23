@@ -13,11 +13,23 @@ const userSchema = z.object({
 
 export type User = z.infer<typeof userSchema>;
 
+const roll = z.tuple([z.number().min(1).max(6), z.number().min(1).max(6)]);
+export type Roll = z.infer<typeof roll>;
+
 export const gameSchema = z.object({
   id: z.string().uuid(),
   gameCode: z.string(),
   totalRounds: z.number(),
   currentRound: z.number(),
+  currentRoundRollHist: z
+    .array(
+      z.object({
+        roll: roll,
+        rollAmt: z.number(),
+        completed: z.boolean().default(false),
+      }),
+    )
+    .default([]),
   roundRollCount: z.number(),
   currentScore: z.number(),
   currentPlayer: z.number(),
@@ -31,15 +43,10 @@ export const gameSchema = z.object({
     .returns(z.void()),
   changeNumberOfRounds: z.function().args(z.number()).returns(z.void()),
   startGame: z.function().returns(z.void()),
-  completeRoll: z
-    .function()
-    .args(z.tuple([z.number().min(1).max(6), z.number().min(1).max(6)]))
-    .returns(z.void()),
+  completeRoll: z.function().args().returns(z.void()),
   bank: z.function().args(z.string().uuid()).returns(z.void()),
   newGame: z.function().args(z.boolean()).returns(z.void()),
-  rollDice: z
-    .function()
-    .returns(z.tuple([z.number().min(1).max(6), z.number().min(1).max(6)])),
+  rollDice: z.function().returns(roll),
 });
 
 export type Game = z.infer<typeof gameSchema>;

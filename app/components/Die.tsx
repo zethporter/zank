@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 
 const randomDieValue = () => Math.ceil(Math.random() * 6);
 
-const Die = ({ value }: { value: number | null }) => {
+const Die = ({ value }: { value: number }) => {
   const [_value, setValue] = useState<number>(value ?? randomDieValue());
   useEffect(() => {
     let intervalId: any;
 
-    if (value === null) {
+    if (value === 0) {
       // Start the animation
       intervalId = setInterval(() => {
         setValue(randomDieValue());

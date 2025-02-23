@@ -12,18 +12,15 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const [diceValues, setDiceValues] = useState<[number | null, number | null]>([
-    null,
-    null,
-  ]);
+  const [diceValues, setDiceValues] = useState<[number, number]>([0, 0]);
   const game = useGameStore();
 
   const rollDice = async () => {
+    setDiceValues([0, 0]);
     const newValues = game.rollDice();
-    setDiceValues([null, null]);
-    await new Promise((resolve) => setTimeout(resolve, 700));
     setDiceValues(game.rollDice());
-    game.completeRoll(diceValues);
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    game.completeRoll();
   };
   switch (game.gameStatus) {
     case "lobby":
@@ -34,6 +31,7 @@ function Home() {
             addPlayer={game.addPlayer}
             removePlayer={game.removePlayer}
             movePlayer={game.movePlayer}
+            changeNumberOfRounds={game.changeNumberOfRounds}
           />
           <button
             type="button"
@@ -47,8 +45,19 @@ function Home() {
       );
     case "playing":
       return (
-        <div className="flex flex-col gap-5 items-center">
-          <h3>{game.currentScore}</h3>
+        <div className="flex flex-col gap-4 items-center">
+          <div className="flex flex-row w-full items-center gap-2">
+            <progress
+              className="progress progress-accent grow"
+              value={game.currentRound}
+              max={game.totalRounds}
+            ></progress>
+            <div className="badge badge-accent">{game.currentRound}</div>
+          </div>
+          <div className="flex flex-col content-center items-center gap-1">
+            <div className="stat-value text-secondary">{game.currentScore}</div>
+            <div className="badge badge-primary">{game.roundRollCount}</div>
+          </div>
           <button
             type="button"
             onClick={() => rollDice()}
@@ -65,6 +74,14 @@ function Home() {
         </div>
       );
     case "finished":
-      return <p>Game Over</p>;
+      return (
+        <button
+          type="button"
+          className="btn btn-wide btn-primary btn-soft"
+          onClick={() => game.newGame(true)}
+        >
+          New Game
+        </button>
+      );
   }
 }
