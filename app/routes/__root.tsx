@@ -1,6 +1,10 @@
 // app/routes/__root.tsx
-import { Outlet, createRootRoute } from "@tanstack/react-router";
-import { Meta, Scripts } from "@tanstack/start";
+import {
+  Outlet,
+  createRootRoute,
+  Scripts,
+  HeadContent,
+} from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import {
   SignedIn,
@@ -45,7 +49,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     <ClerkProvider>
       <html data-theme="dracula">
         <head>
-          <Meta />
+          <HeadContent />
         </head>
         <body className="bg-base-100">
           <div className=" bg-radial-[at_50%_75%] from-primary/20 via-secondary/20 to-accent/20 to-90% h-[100dvh]">
