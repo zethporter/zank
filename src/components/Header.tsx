@@ -2,16 +2,16 @@ import { Link } from '@tanstack/react-router'
 
 import { useState } from 'react'
 import {
-  ChevronDown,
-  ChevronRight,
-  Database,
-  Home,
-  Menu,
-  Network,
-  SquareFunction,
-  StickyNote,
-  X,
-} from 'lucide-react'
+  IconChevronDown,
+  IconChevronRight,
+  IconDatabase,
+  IconHome,
+  IconMenu as Menu,
+  IconNetwork as Network,
+  IconNote as SquareFunction,
+  IconSquare as StickyNote,
+  IconX as X,
+} from '@tabler/icons-react'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -66,7 +66,7 @@ export default function Header() {
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
             }}
           >
-            <Home size={20} />
+            <IconHome size={20} />
             <span className="font-medium">Home</span>
           </Link>
 
@@ -121,9 +121,9 @@ export default function Header() {
               }
             >
               {groupedExpanded.StartSSRDemo ? (
-                <ChevronDown size={20} />
+                <IconChevronDown size={20} />
               ) : (
-                <ChevronRight size={20} />
+                <IconChevronRight size={20} />
               )}
             </button>
           </div>
@@ -179,7 +179,7 @@ export default function Header() {
                 'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
             }}
           >
-            <Database size={20} />
+            <IconDatabase size={20} />
             <span className="font-medium">Drizzle</span>
           </Link>
 
