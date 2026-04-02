@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --bun vite dev --port 3000",
-    "build": "bun --bun vite build",
-    "preview": "bun --bun vite preview",
+    "dev": "vite dev --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier",
