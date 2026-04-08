@@ -25,7 +25,7 @@ function RouteComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Welcome to Wrestler of the Day</CardTitle>
+          <CardTitle>Zeth&apos;s Games</CardTitle>
           <CardDescription>Sign in to continue</CardDescription>
         </CardHeader>
         <CardContent>
